@@ -14,7 +14,7 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='ginnie',
-    maintainer_email='kingar@kth.se',
+    maintainer_email='kinga.ginn.renz@gmail.com',
     description='DO driver messages',
     license='TODO: License declaration',
     tests_require=['pytest'],

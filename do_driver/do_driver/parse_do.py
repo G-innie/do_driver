@@ -38,7 +38,6 @@ class DODecoder(Node):
 
         do_msg = DO()
         do_msg.time = self.get_clock().now().to_msg()
-        do_msg.time_do = msg[0]
         do_msg.temperature = temperature
         do_msg.dissolved_oxygen = dissolved_oxygen
         do_msg.check_sum = msg[3]
