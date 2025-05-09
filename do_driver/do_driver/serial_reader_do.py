@@ -9,7 +9,6 @@ def main():
 
     rclpy.init()
     node = rclpy.create_node('serial_reader_do')
-    rate = node.create_rate(2)  # 2 Hz
     
     # Create a publisher to publish the data
     publisher = node.create_publisher(String, '/do/raw', 2)
@@ -22,7 +21,7 @@ def main():
             connected = True
         except serial.SerialException as e:
             node.get_logger().error(f"Error opening serial port: {e}")
-            rate.sleep()
+            time.sleep(1)
     
     while rclpy.ok() and connected:
         try:
@@ -38,10 +37,10 @@ def main():
                 publisher.publish(msg)
                 node.get_logger().info(f'Publishing: {msg.data}')
                 
-            rate.sleep()
+            time.sleep(0.1)  
         except Exception as e:
             node.get_logger().error(f"Error during communication: {e}")
-            time.sleep()
+            time.sleep(0.1)
 
 if __name__ == '__main__':
     try:
