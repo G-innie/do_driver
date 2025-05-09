@@ -21,19 +21,19 @@ class DODecoder(Node):
 
     def listener_callback(self, msg):
         self.get_logger().info(f"Received message: {msg.data}")
-        msg = msg.data.strip('\r\n').split(',')
+        msg = msg.data.strip(',\r\n').split(',')
 
         if len(msg) != 4:
-            self.get_logger().error(f"Invalid message format. Length should be 4, got {len(msg)}")
+            self.get_logger().error(f"Invalid message format. Length should be 5, got {len(msg)}")
             return
         
         # decode temperature
-        temperature = struct.unpack('!f', bytes.fromhex(msg[1]))[0]
+        temperature = struct.unpack('>h', bytes.fromhex(msg[1]))[0]
         temperature /= 1000
         temperature -= 5
 
         # decode dissolved oxygen
-        dissolved_oxygen = struct.unpack('!f', bytes.fromhex(msg[2]))[0]
+        dissolved_oxygen = struct.unpack('>H', bytes.fromhex(msg[2]))[0]
         dissolved_oxygen /= 100
 
         do_msg = DO()
