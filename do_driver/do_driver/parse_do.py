@@ -8,16 +8,29 @@ import struct
 class DODecoder(Node):
     # stdo,HEX,HEX
 
-    def __init__(self, input_topic, output_topic):
+    def __init__(self):
         super().__init__('do_driver')
+
+        self.declare_parameter("input_topic", "do_raw")
+        self.input_topic = self.get_parameter("input_topic").get_parameter_value().string_value
+
+        self.declare_parameter("output_topic", "do_parsed")
+        self.output_topic = self.get_parameter("output_topic").get_parameter_value().string_value
+
+        self.declare_parameter("request_topic", "do_request")
+        self.request_topic = self.get_parameter("request_topic").get_parameter_value().string_value
+
         self.get_logger().info("Starting DO driver node to decode raw DO data")
-        self.publisher = self.create_publisher(DO, output_topic, 10)
+        self.publisher = self.create_publisher(DO, self.output_topic, 10)
+        self.request_publisher = self.create_publisher(String, self.request_topic, 10)
         self.subscriber = self.create_subscription(
             String,
-            input_topic,
+            self.input_topic,
             self.listener_callback,
             10
         )
+
+        self.do_timer = self.create_timer(1, self.timer_callback)
 
     def listener_callback(self, msg):
         self.get_logger().info(f"Received message: {msg.data}")
@@ -45,13 +58,15 @@ class DODecoder(Node):
         self.get_logger().info(f"Publishing message: {do_msg}")
         self.publisher.publish(do_msg)
 
+    def timer_callback(self):    
+        msg = String()
+        msg.data = 'stdo,19\r\n'
+        self.request_publisher.publish(msg)
+        self.get_logger().info(f"Published request: {msg.data}")
+
 def main(args=None):
     rclpy.init(args=args)
-    # TODO: Parse in/out topic from config file or launch file
-    node = DODecoder(
-        input_topic='/do/raw',
-        output_topic='/do'
-    )
+    node = DODecoder()
     rclpy.spin(node)
     rclpy.shutdown()
 

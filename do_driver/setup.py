@@ -21,7 +21,6 @@ setup(
     entry_points={
         'console_scripts': [
             'do_driver = do_driver.parse_do:main',
-            'serial_reader_do = do_driver.serial_reader_do:main',
         ],
     },
 )
